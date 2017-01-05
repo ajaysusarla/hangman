@@ -29,8 +29,7 @@
 #include "game.h"
 
 #define BOARD_WIDTH  60
-#define BOARD_HEIGHT 30
-
+#define BOARD_HEIGHT 37
 #define MSG_BOX_WIDTH 60
 #define MSG_BOX_HEIGHT 7
 
