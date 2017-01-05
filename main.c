@@ -22,12 +22,15 @@
 
 #define _ASPELL_DICT_LANG "en_US"
 
+#define WORDS "/usr/share/dict/words"
+
 #include "hangman.h"
 #include "window.h"
 #include "game.h"
 
 #define BOARD_WIDTH  60
 #define BOARD_HEIGHT 30
+
 #define MSG_BOX_WIDTH 60
 #define MSG_BOX_HEIGHT 7
 
