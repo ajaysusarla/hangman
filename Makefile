@@ -40,14 +40,20 @@ LIBS := -lncurses\
         $(NULL)
 
 
-all: main.o window.o
-	$(CC) $(CFLAGS) $(LIBS) window.o main.o -o $(EXE)
+all: main.o window.o game.o
+	$(CC) $(CFLAGS) $(LIBS) window.o \
+				main.o \
+				game.o \
+				-o $(EXE)
 
 main.o: main.c hangman.h
 	$(CC) $(CFLAGS) -c main.c
 
 window.o: window.c window.h
 	$(CC) $(CFLAGS) -c window.c
+
+game.o: game.c game.h
+	$(CC) $(CFLAGS) -c game.c
 
 clean:
 	rm -f *.o $(EXE) core

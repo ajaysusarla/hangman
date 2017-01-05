@@ -23,22 +23,13 @@
 #define _ASPELL_DICT_LANG "en_US"
 
 #include "hangman.h"
-#include "graphic.h"
 #include "window.h"
+#include "game.h"
 
 #define BOARD_WIDTH  60
 #define BOARD_HEIGHT 30
-
-void print_graphic(char **g)
-{
-        int i;
-
-        for (i = 0; i < GRAPHIC_ROWS; i++) {
-                printf("%s\n", g[i]);
-        }
-
-}
-
+#define MSG_BOX_WIDTH 60
+#define MSG_BOX_HEIGHT 7
 
 /* toggle cursor display */
 static void _hide_cursor(int state)
@@ -89,64 +80,52 @@ static void termination_handler(int sig)
 }
 
 
-Game * game_new(void)
-{
-        Game *game;
-
-        game = (Game *)malloc(sizeof(Game));
-        if (game == NULL) {
-                fprintf(stderr, "Memory allocation failure\n");
-                return NULL;
-        }
-
-        return game;
-}
-
-void game_free(Game *game)
-{
-        if (game != NULL) {
-                free(game);
-                game = NULL;
-        }
-}
-
-void game_loop(hangman *h)
-{
-        int ch = 0;
-
-        nodelay(stdscr, FALSE);
-
-        do {
-                ch = getch();
-
-                if (ch == KEY_ESC || ch == 'q' || ch == 'Q') {
-                        printf("quitting mate!!!\n");
-                        break;
-                }
-        } while (1);
-
-        nodelay(stdscr, FALSE);
-}
-
 void draw_board(hangman *h)
 {
         int xpos, ypos;
 
         window_clear(h);
 
-        /* the board at the center of the screen */
+        /* the hangman area at the top of the screen */
         xpos = (getmaxx(stdscr) - BOARD_WIDTH) / 2;
-        ypos = (getmaxy(stdscr) - BOARD_HEIGHT) / 2;
+        ypos = (getmaxy(stdscr) - BOARD_HEIGHT) / 5;
 
-        h->board = newwin(BOARD_HEIGHT, BOARD_WIDTH, ypos, xpos);
-        keypad(h->board, TRUE);
+        h->hman = newwin(BOARD_HEIGHT, BOARD_WIDTH, ypos, xpos);
+        window_draw_box(h->hman, 0, 0, BOARD_HEIGHT, BOARD_WIDTH,
+                        A_NORMAL, A_NORMAL);
+        keypad(h->hman, TRUE);
 
-        wattrset(h->board, A_NORMAL);
-        wbkgdset(h->board, A_NORMAL & A_COLOR);
+        wattrset(h->hman, A_NORMAL);
+        wbkgdset(h->hman, A_NORMAL & A_COLOR);
 
-        touchwin(h->board);
-        wnoutrefresh(h->board);
+        touchwin(h->hman);
+        wnoutrefresh(h->hman);
 
+        /* The word area */
+        //h->word = newwin();
+
+        /* The misses area */
+        //h->miss = newwin();
+
+        /* A message box */
+        xpos = (getmaxx(stdscr) - MSG_BOX_WIDTH) / 2;
+        ypos = (getmaxy(stdscr) - MSG_BOX_HEIGHT);
+        h->msg = newwin(MSG_BOX_HEIGHT, MSG_BOX_WIDTH, ypos, xpos);
+
+        window_draw_edge(h->msg,
+                         0, 0,
+                         MSG_BOX_HEIGHT, MSG_BOX_WIDTH,
+                         A_BOLD, A_NORMAL);
+
+        wattrset(h->msg, A_NORMAL);
+        wbkgdset(h->msg, A_NORMAL & A_COLOR);
+
+        touchwin(h->msg);
+        wnoutrefresh(h->msg);
+
+
+        /* Box to display total number of gueses  */
+        //h->guess = newwin();
 }
 
 int main(void)
@@ -170,6 +149,7 @@ int main(void)
 
         screen_fin();
 
+        printf("Number of guesses: %d\n", h.game->guesses);
         game_free(h.game);
 
         exit(EXIT_SUCCESS);

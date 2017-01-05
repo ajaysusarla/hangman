@@ -14,32 +14,15 @@
  *
  */
 
-#ifndef _HANGMAN_H_
-#define _HANGMAN_H_
+#ifndef _GAME_H_
+#define _GAME_H_
 
-#include <ncurses.h>
+#include "hangman.h"
 
-typedef struct _hangman hangman;
-typedef struct _game Game;
+Game * game_new(void);
+void game_free(Game *game);
+void game_loop(hangman *h);
 
-struct _game {
-        const char *word;
-        unsigned int guesses;
-        unsigned int misses;
-};
+void draw_graphic(WINDOW *w, char **g);
 
-struct _hangman {
-        const char *title;
-        WINDOW *hman;
-        WINDOW *word;
-        WINDOW *miss;
-        WINDOW *guess;
-        WINDOW *msg;
-
-        Game *game;
-};
-
-/* Keys */
-#define KEY_ESC 27
-
-#endif  /* _HANGMAN_H_ */
+#endif  /* _GAME_H_ */
