@@ -14,34 +14,14 @@
  *
  */
 
-#ifndef _HANGMAN_H_
-#define _HANGMAN_H_
+#ifndef _DISPLAY_H_
+#define _DISPLAY_H_
 
-#include <ncurses.h>
+#include "hangman.h"
 
-typedef struct _hangman hangman;
-typedef struct _game Game;
+int display_init(void);
+void display_fin(void);
 
-struct _game {
-        const char *word;
-        unsigned int guesses;
-        unsigned int misses;
-};
+void draw_board(hangman *h);
 
-struct _hangman {
-        const char *title;
-        WINDOW *hman;
-        WINDOW *word;
-        WINDOW *miss;
-        WINDOW *guess;
-        WINDOW *msg;
-
-        Game *game;
-};
-
-/* Keys */
-#define KEY_ESC 27
-
-extern void quit(hangman *h);
-
-#endif  /* _HANGMAN_H_ */
+#endif  /* _DISPLAY_H_ */

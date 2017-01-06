@@ -20,7 +20,7 @@
 #include "game.h"
 #include "graphic.h"
 
-void draw_graphic(WINDOW *w, char **g)
+void draw_graphic(WINDOW *w, char g[][GRAPHIC_COLS])
 {
         int i, j;
         int xpos, ypos;
@@ -62,43 +62,31 @@ void game_loop(hangman *h)
 
         nodelay(stdscr, FALSE);
 
-        draw_graphic(h->hman, graphic_start);
+        draw_graphic(h->hman, graphic[0]);
         refresh();
 
         do {
                 ch = getch();
 
-                if (ch == KEY_ESC || ch == 'Q') {
-                        printf("quitting mate!!!\n");
+                switch(ch) {
+                case KEY_ESC:
+                case CTRL_KEY('Q'):
+                        quit(h);
+                        break;
+                default:
                         break;
                 }
 
                 h->game->guesses++;
                 h->game->misses++;
 
-                if (h->game->misses == 1)
-                        draw_graphic(h->hman, graphic_stage_1);
-                else if (h->game->misses == 2)
-                        draw_graphic(h->hman, graphic_stage_2);
-                else if (h->game->misses == 3)
-                        draw_graphic(h->hman, graphic_stage_3);
-                else if (h->game->misses == 4)
-                        draw_graphic(h->hman, graphic_stage_4);
-                else if (h->game->misses == 5)
-                        draw_graphic(h->hman, graphic_stage_5);
-                else if (h->game->misses == 6)
-                        draw_graphic(h->hman, graphic_stage_6);
-                else if (h->game->misses == 7)
-                        draw_graphic(h->hman, graphic_stage_7);
-                else if (h->game->misses == 8)
-                        draw_graphic(h->hman, graphic_stage_8);
-                else if (h->game->misses == 9) {
-                        draw_graphic(h->hman, graphic_end);
+                if (h->game->misses == GRAPHIC_MAX) {
                         refresh();
                         sleep(1);
                         break;
                 }
 
+                draw_graphic(h->hman, graphic[h->game->misses]);
                 refresh();
 
         } while (1);

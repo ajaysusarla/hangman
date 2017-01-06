@@ -19,10 +19,13 @@
 
 #include "hangman.h"
 
+#define CTRL_KEY(c) ((c) & 0x1F)
+#define ALT_KEY(c)  ((c) | 0xA0)
+
 Game * game_new(void);
 void game_free(Game *game);
 void game_loop(hangman *h);
 
-void draw_graphic(WINDOW *w, char **g);
+void draw_graphic(WINDOW *w, char g[][53]);
 
 #endif  /* _GAME_H_ */
