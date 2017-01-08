@@ -17,21 +17,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <time.h>
+#include <unistd.h>
+#include <errno.h>
 
+#ifdef LINUX
 #include <aspell.h>
 
 #define _ASPELL_DICT_LANG "en_US"
-
-#define WORDS "/usr/share/dict/words"
+#endif
 
 #include "hangman.h"
 #include "game.h"
 #include "display.h"
+#include "util.h"
+
+volatile sig_atomic_t fatal_error_in_progress = 0;
 
 static void termination_handler(int sig)
 {
+        if (fatal_error_in_progress)
+                raise(sig);
+
+        fatal_error_in_progress = 1;
+
         display_fin();
-        exit(EXIT_SUCCESS);
+
+        signal(sig, SIG_DFL);
+        raise(sig);
 }
 
 void quit(hangman *h)
@@ -48,6 +61,17 @@ int main(void)
         hangman h;
 
         signal(SIGINT, termination_handler);
+        signal(SIGKILL, termination_handler);
+        signal(SIGTERM, termination_handler);
+
+        if (access(WORDS, F_OK) != 0) {
+                fprintf(stderr, "Failed to open file `%s`", WORDS);
+                perror(" ");
+                exit(EXIT_FAILURE);
+        }
+
+       /* Initialise random number generator. */
+        srand((unsigned int)getpid() + (unsigned int)time(NULL));
 
         if (display_init() != 0) {
                 exit(EXIT_FAILURE);
