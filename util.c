@@ -14,13 +14,40 @@
  *
  */
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "util.h"
 
 unsigned int get_num_words_in_dict(void)
 {
-        unsigned int ret;
+        unsigned int words = 0;
+        FILE *f;
 
-        return ret;
+        f = fopen(WORDS, "r");
+        if (f == NULL) {
+                fprintf(stderr, "fopen: Unable to open file `%s`.\n", WORDS);
+                return -1;
+        }
+
+        for (;;) {
+                char buf[2] = { 0 };
+                size_t n = fread(buf, 1, 1, f);
+
+                if (n < 1) {
+                        break;
+                }
+                if (strncmp(buf, "\n", 1) == 0) {
+                        words++;
+                }
+        }
+
+        if (fclose(f) != 0) {
+                fprintf(stderr, "Unable to close file `%s`.\n", WORDS);
+        }
+
+        return words;
 }
 
 /* From: http://www.azillionmonkeys.com/qed/random.html */

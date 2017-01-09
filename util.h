@@ -22,4 +22,6 @@
 double drand(void);
 #define irand(x) ((unsigned int) ((x) * drand()))
 
+unsigned int get_num_words_in_dict(void);
+
 #endif  /* _UTIL_H_ */

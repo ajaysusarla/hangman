@@ -58,6 +58,12 @@ int main(void)
 {
         struct sigaction sa;
         hangman h;
+        unsigned int words, word_location;
+
+        words = get_num_words_in_dict();
+        /* Initialise random number generator. */
+        srand((unsigned int)getpid() + (unsigned int)time(NULL));
+        word_location = irand(words);
 
         /* Setup termination signal handler */
         sa.sa_handler = &termination_handler;
@@ -77,9 +83,6 @@ int main(void)
                 perror(" ");
                 exit(EXIT_FAILURE);
         }
-
-       /* Initialise random number generator. */
-        srand((unsigned int)getpid() + (unsigned int)time(NULL));
 
         if (display_init() != 0) {
                 exit(EXIT_FAILURE);
