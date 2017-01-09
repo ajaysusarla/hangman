@@ -32,19 +32,17 @@
 #include "display.h"
 #include "util.h"
 
-volatile sig_atomic_t fatal_error_in_progress = 0;
-
 static void termination_handler(int sig)
 {
-        if (fatal_error_in_progress)
-                raise(sig);
+        switch(sig) {
+        case SIGINT:
+        case SIGHUP:
+                display_fin();
+                break;
+        default:
+                break;
+        }
 
-        fatal_error_in_progress = 1;
-
-        display_fin();
-
-        signal(sig, SIG_DFL);
-        raise(sig);
 }
 
 void quit(hangman *h)
@@ -58,11 +56,21 @@ void quit(hangman *h)
 
 int main(void)
 {
+        struct sigaction sa;
         hangman h;
 
-        signal(SIGINT, termination_handler);
-        signal(SIGKILL, termination_handler);
-        signal(SIGTERM, termination_handler);
+        /* Setup termination signal handler */
+        sa.sa_handler = &termination_handler;
+        sa.sa_flags = SA_RESTART;
+        sigfillset(&sa.sa_mask);
+
+        if (sigaction(SIGHUP, &sa, NULL) == -1) {
+                perror("sigaction - SIGHUP");
+        }
+
+        if (sigaction(SIGINT, &sa, NULL) == -1) {
+                perror("sigaction - SIGNINT");
+        }
 
         if (access(WORDS, F_OK) != 0) {
                 fprintf(stderr, "Failed to open file `%s`", WORDS);
